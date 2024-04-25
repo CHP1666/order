@@ -1,0 +1,86 @@
+server:
+  port: 8080
+
+spring:
+  # DataSource Config
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/01?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+#    默认密码
+    password:
+    type: com.alibaba.druid.pool.DruidDataSource
+    #配置连接池的相关的信息
+    druid:
+      # 初始化大小
+      initial-size: 2
+      # 最小连接数
+      min-idle: 2
+      # 最大连接数
+      max-active: 2
+      # 获取连接时的最大等待时间
+      max-wait: 60000
+      # 一个连接在池中最小生存的时间，单位是毫秒
+      min-evictable-idle-time-millis: 300000
+      # 多久才进行一次检测需要关闭的空闲连接，单位是毫秒
+      time-between-eviction-runs-millis: 60000
+      stat-view-servlet:
+        enabled: true
+        url-pattern: /order/druid/*
+        reset-enable: true
+        login-username: admin
+        login-password: 123456
+        allow:
+        deny:
+
+      web-stat-filter:
+        enabled: true
+        exclusions: /druid/*,*.js,*.gif,*.jpg,*.bmp,*.png,*.css,*.ico
+        session-stat-enable: true
+        session-stat-max-count: 1000
+        url-pattern: /*
+      filter:
+        # 开启慢 SQL 监控
+        stat:
+          enabled: true
+          db-type: mysql
+          log-slow-sql: true
+          slow-sql-millis: 1500
+
+  mvc:
+    dispatch-options-request: true
+    pathmatch:
+      # Springfox使用的路径匹配是基于AntPathMatcher的，而Spring Boot 2.6.X使用的是PathPatternMatcher
+      # 所以需要配置此参数
+      matching-strategy: ANT_PATH_MATCHER
+
+
+mybatis-plus:
+  global-config:
+    db-config:
+      id-type: auto
+
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+
+# 在线接口文档配置
+knife4j:
+  # 开启增强配置
+  enable: true
+
+
+logging:
+  charset:
+    file: UTF-8 # 日志文件的字符集
+  file:
+    name: ./logs/order.log
+
+  logback:
+    rollingpolicy:
+      file-name-pattern: './logs/order.%d{yyyy-MM-dd}-%i.log.gz' #滚动日志文件名，此处进行了GZ压缩
+      max-file-size: 5MB #单个日志文件的最大大小
+      max-history: 30 #最多保留多少天日志
+      total-size-cap: 1GB #所有备份日志允许占用的最大空间
+

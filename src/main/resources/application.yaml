@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: order-backend
+  profiles:
+    # 根据 application-后缀.yaml 选择需要的环境后缀填入（dev,docker）
+    active: dev
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+
+geo:
+  distance-url: https://maps.googleapis.com/maps/api/distancematrix/json
+#  distance-url:  https://cloud.google.com/maps-platform/routes/ 文档的api
+  api-key: AIzaSyB1w8HKKEKIXX8Y--3UU-GskKts9Hxvaq8

@@ -1,0 +1,50 @@
+version: "3"
+services:
+  mysql:
+    image: mysql:8.0.31
+    container_name: mysql
+    restart: always
+    environment:
+      TZ: Asia/Shanghai
+      MYSQL_ROOT_PASSWORD: root # 设置root密码
+      # 初始数据库名称
+      MYSQL_DATABASE: 01
+      # 初始数据库用户名
+      MYSQL_USER: root
+      # 初始数据库用户的密码
+      MYSQL_PASSWORD: De9946c9_
+    ports:
+      # 宿主机端口:容器端口
+      - "3306:3306"
+    volumes:
+      # 数据挂载，mysql数据的挂载路径 <宿主机：容器内路径>(要修改的话修改宿主机路径即可)
+      - ./docker_data/mysql/data/:/var/lib/mysql/
+      # 配置挂载
+      - ./docker_data/mysql/conf/:/etc/mysql/conf.d/
+      # 初始化目录挂载
+      - ./init/:/docker-entrypoint-initdb.d/
+    command:
+      # 将mysql8.0默认密码策略 修改为 原先 策略 (mysql8.0对其默认策略做了更改 会导致密码无法匹配)
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_general_ci
+      --explicit_defaults_for_timestamp=true
+      --lower_case_table_names=1
+
+  order-backend:
+    depends_on:
+      - mysql
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: order-backend:0.0.1
+    container_name: order-backend
+    ports:
+      - "8080:8080"
+    environment:
+      TZ: Asia/Shanghai
+    volumes:
+      - ./docker_data/app/order/logs:/logs  # 日志文件挂载
+      - ./docker_data/app/order/upload:/root/order/upload  # 文件上传地址挂载
+    external_links:
+      - mysql
